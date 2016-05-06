@@ -3,19 +3,21 @@
 //#include <cutil.h>
 
 
-texture<float, 2, cudaReadModeElementType> tex_A;
-texture<float, 2, cudaReadModeElementType> tex_B;
-surface<void, 2> surf_C;
+texture<float, 3, cudaReadModeElementType> tex_A;
+texture<float, 3, cudaReadModeElementType> tex_B;
 
-void err_handling(cudaError_t *err, const char *str)
+#define err_handling(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
 {
-	if (*err != cudaSuccess) {
-		printf("%s\n", str);
-		exit(EXIT_FAILURE);
-	}
+   if (code != cudaSuccess) 
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
 }
 
-__global__ void matMul(const float *A, const float *B, float *C, int m, int k, int n, int pitch)
+
+__global__ void matMul(float *C, int m, int k, int n, int pitch)
 {
 	__shared__ float sA_bf[2][8*64];
 	__shared__ float sB_bf[2][8*64];
@@ -27,6 +29,7 @@ __global__ void matMul(const float *A, const float *B, float *C, int m, int k, i
 
 	int bx = blockIdx.x*64;
 	int by = blockIdx.y*64;
+	int batch_id = blockIdx.z;
 	
 	int id = y*8+x;
 	int inv_id = ((id&28)<<1) + (id%4) + (id<32? 0:4); //id%32/4*8
@@ -45,8 +48,8 @@ __global__ void matMul(const float *A, const float *B, float *C, int m, int k, i
 	
 /*********************************************************************/
 	for (int i = 0; i < 8; ++i) { // first batch of shared store
-		sA_bf[0][i*64+id] = tex2D(tex_A, i, glbA_id);
-		sB_bf[0][i*64+id] = tex2D(tex_B, glbB_id, i);
+		sA_bf[0][i*64+id] = tex3D(tex_A, i, glbA_id, batch_id);
+		sB_bf[0][i*64+id] = tex3D(tex_B, glbB_id, i, batch_id);
 	}
 
 	A_pref = sA_bf[1];
@@ -61,8 +64,8 @@ __global__ void matMul(const float *A, const float *B, float *C, int m, int k, i
 
 		__syncthreads();
 
-		A_pref[id] = tex2D(tex_A, t, glbA_id); // double buffered shared store
-		B_pref[id] = tex2D(tex_B, glbB_id, t);
+		A_pref[id] = tex3D(tex_A, t, glbA_id, batch_id); // double buffered shared store
+		B_pref[id] = tex3D(tex_B, glbB_id, t, batch_id);
 
 		((float4*)a0)[0] = ((float4*)A_now)[y]; // first shared load of each step
 		((float4*)b0)[0] = ((float4*)B_now)[x];
@@ -72,8 +75,8 @@ __global__ void matMul(const float *A, const float *B, float *C, int m, int k, i
 		#pragma unroll
 		for (int i = 1; i < 8; ++i) {
 			int base = i * 16;
-			A_pref[i*64+id] = tex2D(tex_A, t+i, glbA_id); // double bufferd shared store
-			B_pref[i*64+id] = tex2D(tex_B, glbB_id, t+i);
+			A_pref[i*64+id] = tex3D(tex_A, t+i, glbA_id, batch_id); // double bufferd shared store
+			B_pref[i*64+id] = tex3D(tex_B, glbB_id, t+i, batch_id);
 
 			if (i&1) {
 				((float4*)a1)[0] = ((float4*)A_now)[base+y]; // double buffered shared load
@@ -166,6 +169,7 @@ __global__ void matMul(const float *A, const float *B, float *C, int m, int k, i
 		warp 0: 0 for first 16 threads; 8 for second 16 threads;
 		warp 1: 32 for first 16 threads; 40 for second 16 threads;
 */
+	C += batch_id * pitch * m;
 	int baseSh = (id<32? 0:64) + (id&31);
 	int row = by + ((id&16)>>1) + (id<32? 0:32);
 
@@ -184,65 +188,71 @@ __global__ void matMul(const float *A, const float *B, float *C, int m, int k, i
 }
 int main(int argc, char *argv[])
 {
-	if (argc != 4) {
-		printf("usage: ./xxx m n k\n");
+	if (argc != 5) {
+		printf("usage: ./xxx m n k batch\n");
 		return -1;
 	}
-	
-	cudaError_t err = cudaSuccess;
 	
 	int m = atoi(argv[1]);
 	int n = atoi(argv[2]);
 	int k = atoi(argv[3]);
+	int batch = atoi(argv[4]);
 	int pitch = ((n-1)/4+1)*4;
 	
-	float *A = (float*)malloc(m*k*sizeof(float));
-	float *B = (float*)malloc(k*n*sizeof(float));
-	float *C = (float*)malloc(m*pitch*sizeof(float));
+	float *A = (float*)malloc(m*k*batch*sizeof(float));
+	float *B = (float*)malloc(k*n*batch*sizeof(float));
+	float *C = (float*)malloc(m*n*batch*sizeof(float));
 
 	if (A == NULL || B == NULL || C == NULL) {
 		printf("allocate host error!\n");
 		return 1;
 	}
 
-	for (int i = 0; i < m*k; ++i) {
+	for (int i = 0; i < m*k*batch; ++i) {
 		A[i] = rand()/(float)RAND_MAX - rand()/(float)RAND_MAX;
 	}
 
-	for (int i = 0; i < k*n; ++i) {
+	for (int i = 0; i < k*n*batch; ++i) {
 		B[i] = rand()/(float)RAND_MAX - rand()/(float)RAND_MAX;
 	}
 
 
-	float *dev_A = NULL;
-	float *dev_B = NULL;
 	float *dev_C = NULL;
 
-	err = cudaMalloc((void**)&dev_A, m*k*sizeof(float));
-	err_handling(&err, "allocate devecie error A!");
-
-	err = cudaMalloc((void**)&dev_B, k*n*sizeof(float));
-	err_handling(&err, "allocate devecie error B!");
-
-	err = cudaMalloc((void**)&dev_C, m*pitch*sizeof(float));
-	err_handling(&err, "allocate devecie error C!");
 	
-	err = cudaMemcpy(dev_A, A, m*k*sizeof(float), cudaMemcpyHostToDevice);
-	err_handling(&err, "memcpy to A error!");
-
-	err = cudaMemcpy(dev_B, B, k*n*sizeof(float), cudaMemcpyHostToDevice);
-	err_handling(&err, "memcpy to B error!");
+	err_handling(  cudaMalloc((void**)&dev_C, m*pitch*batch*sizeof(float))  );
+	
 
 	cudaChannelFormatDesc ADesc = cudaCreateChannelDesc<float>();
 	cudaChannelFormatDesc BDesc = cudaCreateChannelDesc<float>();
 	cudaArray *A_array, *B_array;
-	cudaMallocArray(&A_array, &ADesc, k, m);
-	cudaMallocArray(&B_array, &BDesc, n, k);
-	cudaMemcpyToArray(A_array, 0, 0, A, m*k*sizeof(float), cudaMemcpyHostToDevice);
-	cudaMemcpyToArray(B_array, 0, 0, B, k*n*sizeof(float), cudaMemcpyHostToDevice);
+	cudaExtent extentA, extentB;
 
-	cudaBindTextureToArray(tex_A, A_array);
-	cudaBindTextureToArray(tex_B, B_array);
+	extentA = make_cudaExtent(k, m, batch);
+	extentB = make_cudaExtent(n, k, batch);
+
+	err_handling(  cudaMalloc3DArray(&A_array, &ADesc, extentA)  );
+	err_handling(  cudaMalloc3DArray(&B_array, &BDesc, extentB)  );
+
+	cudaMemcpy3DParms copyParamsA = {0};
+	copyParamsA.srcPtr = make_cudaPitchedPtr((void*)A, k*sizeof(float), k, m);
+	copyParamsA.dstArray = A_array;
+	copyParamsA.extent = extentA;
+	copyParamsA.kind = cudaMemcpyHostToDevice;
+
+	cudaMemcpy3D(&copyParamsA);
+
+	cudaMemcpy3DParms copyParamsB = {0};
+	copyParamsB.srcPtr = make_cudaPitchedPtr((void*)B, n*sizeof(float), n, k);
+	copyParamsB.dstArray = B_array;
+	copyParamsB.extent = extentB;
+	copyParamsB.kind = cudaMemcpyHostToDevice;
+
+	cudaMemcpy3D(&copyParamsB);
+	
+
+	err_handling(  cudaBindTextureToArray(tex_A, A_array)  );
+	err_handling(  cudaBindTextureToArray(tex_B, B_array)  );
 	
 	tex_A.addressMode[0] = cudaAddressModeBorder;
 	tex_A.addressMode[1] = cudaAddressModeBorder;
@@ -251,48 +261,55 @@ int main(int argc, char *argv[])
 	tex_B.addressMode[1] = cudaAddressModeBorder;
 
 
-	dim3 dimGrid((n-1)/64+1, (m-1)/64+1, 1);
+	dim3 dimGrid((n-1)/64+1, (m-1)/64+1, batch);
 	dim3 dimBlock(8, 8, 1);
 
 	cudaEvent_t start, stop;
 
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
-	
-	cudaEventRecord(start, 0);
-	matMul<<<dimGrid, dimBlock>>>(dev_A, dev_B, dev_C, m, k, n, pitch);
-	cudaEventRecord(stop, 0);
+	err_handling(  cudaEventCreate(&start)  );
+	err_handling(  cudaEventCreate(&stop)  );
 
-	cudaEventSynchronize(start);
-	cudaEventSynchronize(stop);
+
+	
+	err_handling(  cudaEventRecord(start, 0)  );
+	matMul<<<dimGrid, dimBlock>>>(dev_C, m, k, n, pitch);
+	err_handling(  cudaEventRecord(stop, 0)  );
+
+
+
+	err_handling(  cudaEventSynchronize(start)  );
+	err_handling(  cudaEventSynchronize(stop)  );
 
 	float time_elapsed = 0;
-	cudaEventElapsedTime(&time_elapsed, start, stop);
+	err_handling(  cudaEventElapsedTime(&time_elapsed, start, stop)  );
 	printf("%fms\n", time_elapsed);
 
-	err = cudaMemcpy(C, dev_C, m*pitch*sizeof(float), cudaMemcpyDeviceToHost);
-	err_handling(&err, "memcpy to host C error!");
 
+
+	cudaExtent extentC;
+	extentC = make_cudaExtent(n*sizeof(float), m, batch);
+
+	cudaMemcpy3DParms copyParamsC = {0};
+	copyParamsC.srcPtr = make_cudaPitchedPtr((void*)dev_C, pitch*sizeof(float), n, m);
+	copyParamsC.dstPtr = make_cudaPitchedPtr((void*)C, n*sizeof(float), n, m);
+	copyParamsC.extent = extentC;
+	copyParamsC.kind = cudaMemcpyDeviceToHost;
+
+	err_handling(  cudaMemcpy3D(&copyParamsC)  );
 
 	FILE *fp = fopen("gpu.out", "w");
-	for (int i = 0; i < m; i++) {
-		for (int j = 0; j < n; j++) {
-			fprintf(fp, "%f\n", C[i*pitch+j]);
+	for (int b = 0; b < batch; ++b) {
+		for (int i = 0; i < m; ++i) {
+			for (int j = 0; j < n; ++j) {
+				fprintf(fp, "%f\n", C[b*n*m+i*n+j]);
+			}
 		}
 	}
 	fclose(fp);
 
-	err = cudaFree(dev_A);
-	err_handling(&err, "mem free A error!");
 
-	err = cudaFree(dev_B);
-	err_handling(&err, "mem free B error!");
-
-	err = cudaFree(dev_C);
-	err_handling(&err, "mem free C error!");
-
-	err = cudaDeviceReset();
-	err_handling(&err, "device reset error!");
+	err_handling(  cudaFree(dev_C)  );
+	err_handling(  cudaDeviceReset()  );
 
 	return 0;
 }
