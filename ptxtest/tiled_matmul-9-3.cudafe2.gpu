@@ -1,0 +1,628 @@
+# 212 "/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h" 3
+typedef unsigned long size_t;
+#include "crt/device_runtime.h"
+#if !defined(__CUDABE__)
+# 160 "/usr/local/cuda/bin/..//include/device_functions.h"
+ __device_builtin__ ___device__(extern  __no_sc__) void __syncthreads(void);
+#endif
+#if !defined(__CUDABE__)
+# 107 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+ __device_builtin__ ___device__(extern  __no_sc__) struct float4 __ftexfetch1D(__texture_type__, struct float4);
+#endif
+#if !defined(__CUDABE__)
+# 109 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+ __device_builtin__ ___device__(extern  __no_sc__) struct float4 __ftexfetch2D(__texture_type__, struct float4);
+#endif
+#if !defined(__CUDABE__)
+# 111 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+ __device_builtin__ ___device__(extern  __no_sc__) struct float4 __ftexfetch3D(__texture_type__, struct float4);
+#endif
+# 193 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+___device__(static  __no_sc__) __inline__ __attribute__((__always_inline__)) struct float4 _Z11__ftexfetchIfLi2EL19cudaTextureReadMode0EE6float47textureIT_XT0_EXT1_EES1_i(__text__ __texture_type__, struct float4, int);
+# 18 "tiled_matmul-9-3.cu"
+__global__ __var_used__ extern void _Z6matMulPKfS0_Pfiii(const float *, const float *, float *, int, int, int);
+# 6 "tiled_matmul-9-3.cu"
+static  __text__  __var_used__ __texture_type__ tex_A;
+# 7 "tiled_matmul-9-3.cu"
+static  __text__  __var_used__ __texture_type__ tex_B;
+# 8 "tiled_matmul-9-3.cu"
+static  __surf__  __var_used__ __surface_type__ surf_C;
+#include "common_functions.h"
+#if !defined(__CUDABE__)
+#endif
+#if !defined(__CUDABE__)
+#endif
+#if !defined(__CUDABE__)
+#endif
+#if !defined(__CUDABE__)
+#endif
+# 193 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+___device__(static  __no_sc__) __inline__ __attribute__((__always_inline__)) struct float4 _Z11__ftexfetchIfLi2EL19cudaTextureReadMode0EE6float47textureIT_XT0_EXT1_EES1_i(
+# 193 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+__text__ __texture_type__ t, 
+# 193 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+struct float4 i, 
+# 193 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+int d){
+# 193 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+{
+# 194 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+{
+# 195 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+switch (d)
+# 195 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+{
+# 196 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+case 1:
+# 196 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+return __ftexfetch1D(t, i);
+# 197 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+case 2:
+# 197 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+return __ftexfetch2D(t, i);
+# 199 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+default:
+# 199 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+return __ftexfetch3D(t, i);
+# 200 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+}
+# 201 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+}
+# 201 "/usr/local/cuda/bin/..//include/texture_fetch_functions.h"
+}}
+# 18 "tiled_matmul-9-3.cu"
+__global__ __var_used__ void _Z6matMulPKfS0_Pfiii(
+# 18 "tiled_matmul-9-3.cu"
+const float *A, 
+# 18 "tiled_matmul-9-3.cu"
+const float *B, 
+# 18 "tiled_matmul-9-3.cu"
+float *C, 
+# 18 "tiled_matmul-9-3.cu"
+int m, 
+# 18 "tiled_matmul-9-3.cu"
+int k, 
+# 18 "tiled_matmul-9-3.cu"
+int n){
+# 18 "tiled_matmul-9-3.cu"
+{
+# 19 "tiled_matmul-9-3.cu"
+{
+# 20 "tiled_matmul-9-3.cu"
+static  __shared__  __var_used__ float __cuda_local_var_43576_32_non_const_sA_bf[2][512];
+# 21 "tiled_matmul-9-3.cu"
+static  __shared__  __var_used__ float __cuda_local_var_43577_32_non_const_sB_bf[2][512];
+# 22 "tiled_matmul-9-3.cu"
+ float *__cuda_local_var_43578_9_non_const_A_pref;
+# 22 "tiled_matmul-9-3.cu"
+ float *__cuda_local_var_43578_18_non_const_A_now;
+# 23 "tiled_matmul-9-3.cu"
+ float *__cuda_local_var_43579_9_non_const_B_pref;
+# 23 "tiled_matmul-9-3.cu"
+ float *__cuda_local_var_43579_18_non_const_B_now;
+# 25 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43581_6_non_const_x;
+# 26 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43582_6_non_const_y;
+# 28 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43584_6_non_const_bx;
+# 29 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43585_6_non_const_by;
+# 31 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43587_6_non_const_id;
+# 32 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43588_6_non_const_inv_id;
+# 33 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43589_6_non_const_glbA_id;
+# 34 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43590_6_non_const_glbB_id;
+# 37 "tiled_matmul-9-3.cu"
+ float __cuda_local_var_43593_8_non_const_a0[8];
+# 37 "tiled_matmul-9-3.cu"
+ float __cuda_local_var_43593_15_non_const_a1[8];
+# 38 "tiled_matmul-9-3.cu"
+ float __cuda_local_var_43594_8_non_const_b0[8];
+# 38 "tiled_matmul-9-3.cu"
+ float __cuda_local_var_43594_15_non_const_b1[8];
+# 40 "tiled_matmul-9-3.cu"
+ float __cuda_local_var_43596_8_non_const_c[8][8];
+# 57 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43613_6_non_const_track_bf;
+# 169 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43716_6_non_const_baseSh;
+# 170 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43717_6_non_const_row;
+# 25 "tiled_matmul-9-3.cu"
+__cuda_local_var_43581_6_non_const_x = ((int)(threadIdx.x));
+# 26 "tiled_matmul-9-3.cu"
+__cuda_local_var_43582_6_non_const_y = ((int)(threadIdx.y));
+# 28 "tiled_matmul-9-3.cu"
+__cuda_local_var_43584_6_non_const_bx = ((int)((blockIdx.x) * 64U));
+# 29 "tiled_matmul-9-3.cu"
+__cuda_local_var_43585_6_non_const_by = ((int)((blockIdx.y) * 64U));
+# 31 "tiled_matmul-9-3.cu"
+__cuda_local_var_43587_6_non_const_id = ((__cuda_local_var_43582_6_non_const_y * 8) + __cuda_local_var_43581_6_non_const_x);
+# 32 "tiled_matmul-9-3.cu"
+__cuda_local_var_43588_6_non_const_inv_id = ((((__cuda_local_var_43587_6_non_const_id & 28) << 1) + (__cuda_local_var_43587_6_non_const_id % 4)) + ((__cuda_local_var_43587_6_non_const_id < 32) ? 0 : 4));
+# 33 "tiled_matmul-9-3.cu"
+__cuda_local_var_43589_6_non_const_glbA_id = (__cuda_local_var_43585_6_non_const_by + __cuda_local_var_43588_6_non_const_inv_id);
+# 34 "tiled_matmul-9-3.cu"
+__cuda_local_var_43590_6_non_const_glbB_id = (__cuda_local_var_43584_6_non_const_bx + __cuda_local_var_43588_6_non_const_inv_id);
+# 34 "tiled_matmul-9-3.cu"
+{
+# 42 "tiled_matmul-9-3.cu"
+ int i;
+# 42 "tiled_matmul-9-3.cu"
+i = 0;
+# 42 "tiled_matmul-9-3.cu"
+for (; (i < 8); ++i)
+# 42 "tiled_matmul-9-3.cu"
+{
+# 42 "tiled_matmul-9-3.cu"
+{
+# 43 "tiled_matmul-9-3.cu"
+ int j;
+# 43 "tiled_matmul-9-3.cu"
+j = 0;
+# 43 "tiled_matmul-9-3.cu"
+for (; (j < 8); j++)
+# 43 "tiled_matmul-9-3.cu"
+{
+# 44 "tiled_matmul-9-3.cu"
+((((__cuda_local_var_43596_8_non_const_c)[i]))[j]) = (0.0F);
+# 44 "tiled_matmul-9-3.cu"
+}
+# 44 "tiled_matmul-9-3.cu"
+}
+# 44 "tiled_matmul-9-3.cu"
+}
+# 44 "tiled_matmul-9-3.cu"
+}
+# 44 "tiled_matmul-9-3.cu"
+{
+# 47 "tiled_matmul-9-3.cu"
+ int i;
+# 47 "tiled_matmul-9-3.cu"
+i = 0;
+# 47 "tiled_matmul-9-3.cu"
+for (; (i < 8); ++i)
+# 47 "tiled_matmul-9-3.cu"
+{
+# 47 "tiled_matmul-9-3.cu"
+ __texture_type__ __T28;
+# 48 "tiled_matmul-9-3.cu"
+ float __T29;
+# 49 "tiled_matmul-9-3.cu"
+ float __T210;
+# 50 "tiled_matmul-9-3.cu"
+ struct float4 __T211;
+# 51 "tiled_matmul-9-3.cu"
+ struct float4 __T212;
+# 52 "tiled_matmul-9-3.cu"
+ __texture_type__ __T213;
+# 53 "tiled_matmul-9-3.cu"
+ float __T214;
+# 54 "tiled_matmul-9-3.cu"
+ float __T215;
+# 55 "tiled_matmul-9-3.cu"
+ struct float4 __T216;
+# 56 "tiled_matmul-9-3.cu"
+ struct float4 __T217;
+# 48 "tiled_matmul-9-3.cu"
+((((__cuda_local_var_43576_32_non_const_sA_bf)[0]))[((i * 64) + __cuda_local_var_43587_6_non_const_id)]) = ((((__T28 = tex_A) , ((void)(__T29 = ((float)i)))) , ((void)(__T210 = ((float)__cuda_local_var_43589_6_non_const_glbA_id)))) , ((__T212 = (_Z11__ftexfetchIfLi2EL19cudaTextureReadMode0EE6float47textureIT_XT0_EXT1_EES1_i(__T28, ((((((__T211.x) = __T29) , ((void)((__T211.y) = __T210))) , ((void)((__T211.z) = (0.0F)))) , ((void)((__T211.w) = (0.0F)))) , __T211), 2))) , (__T212.x)));
+# 49 "tiled_matmul-9-3.cu"
+((((__cuda_local_var_43577_32_non_const_sB_bf)[0]))[((i * 64) + __cuda_local_var_43587_6_non_const_id)]) = ((((__T213 = tex_B) , ((void)(__T214 = ((float)__cuda_local_var_43590_6_non_const_glbB_id)))) , ((void)(__T215 = ((float)i)))) , ((__T217 = (_Z11__ftexfetchIfLi2EL19cudaTextureReadMode0EE6float47textureIT_XT0_EXT1_EES1_i(__T213, ((((((__T216.x) = __T214) , ((void)((__T216.y) = __T215))) , ((void)((__T216.z) = (0.0F)))) , ((void)((__T216.w) = (0.0F)))) , __T216), 2))) , (__T217.x)));
+# 50 "tiled_matmul-9-3.cu"
+}
+# 50 "tiled_matmul-9-3.cu"
+}
+# 52 "tiled_matmul-9-3.cu"
+__cuda_local_var_43578_9_non_const_A_pref = (((__cuda_local_var_43576_32_non_const_sA_bf)[1]));
+# 53 "tiled_matmul-9-3.cu"
+__cuda_local_var_43579_9_non_const_B_pref = (((__cuda_local_var_43577_32_non_const_sB_bf)[1]));
+# 54 "tiled_matmul-9-3.cu"
+__cuda_local_var_43578_18_non_const_A_now = (((__cuda_local_var_43576_32_non_const_sA_bf)[0]));
+# 55 "tiled_matmul-9-3.cu"
+__cuda_local_var_43579_18_non_const_B_now = (((__cuda_local_var_43577_32_non_const_sB_bf)[0]));
+# 57 "tiled_matmul-9-3.cu"
+__cuda_local_var_43613_6_non_const_track_bf = 0;
+# 57 "tiled_matmul-9-3.cu"
+{
+# 57 "tiled_matmul-9-3.cu"
+ __texture_type__ __T218;
+# 58 "tiled_matmul-9-3.cu"
+ float __T219;
+# 59 "tiled_matmul-9-3.cu"
+ float __T220;
+# 60 "tiled_matmul-9-3.cu"
+ struct float4 __T221;
+# 61 "tiled_matmul-9-3.cu"
+ struct float4 __T222;
+# 62 "tiled_matmul-9-3.cu"
+ __texture_type__ __T223;
+# 63 "tiled_matmul-9-3.cu"
+ float __T224;
+# 64 "tiled_matmul-9-3.cu"
+ float __T225;
+# 65 "tiled_matmul-9-3.cu"
+ struct float4 __T226;
+# 66 "tiled_matmul-9-3.cu"
+ struct float4 __T227;
+# 60 "tiled_matmul-9-3.cu"
+ int t;
+# 60 "tiled_matmul-9-3.cu"
+t = 8;
+# 60 "tiled_matmul-9-3.cu"
+for (; (t < k); t += 8)
+# 60 "tiled_matmul-9-3.cu"
+{
+# 62 "tiled_matmul-9-3.cu"
+__syncthreads();
+# 64 "tiled_matmul-9-3.cu"
+(__cuda_local_var_43578_9_non_const_A_pref[__cuda_local_var_43587_6_non_const_id]) = ((((__T218 = tex_A) , ((void)(__T219 = ((float)t)))) , ((void)(__T220 = ((float)__cuda_local_var_43589_6_non_const_glbA_id)))) , ((__T222 = (_Z11__ftexfetchIfLi2EL19cudaTextureReadMode0EE6float47textureIT_XT0_EXT1_EES1_i(__T218, ((((((__T221.x) = __T219) , ((void)((__T221.y) = __T220))) , ((void)((__T221.z) = (0.0F)))) , ((void)((__T221.w) = (0.0F)))) , __T221), 2))) , (__T222.x)));
+# 65 "tiled_matmul-9-3.cu"
+(__cuda_local_var_43579_9_non_const_B_pref[__cuda_local_var_43587_6_non_const_id]) = ((((__T223 = tex_B) , ((void)(__T224 = ((float)__cuda_local_var_43590_6_non_const_glbB_id)))) , ((void)(__T225 = ((float)t)))) , ((__T227 = (_Z11__ftexfetchIfLi2EL19cudaTextureReadMode0EE6float47textureIT_XT0_EXT1_EES1_i(__T223, ((((((__T226.x) = __T224) , ((void)((__T226.y) = __T225))) , ((void)((__T226.z) = (0.0F)))) , ((void)((__T226.w) = (0.0F)))) , __T226), 2))) , (__T227.x)));
+# 67 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_8_non_const_a0))[0]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[__cuda_local_var_43582_6_non_const_y]);
+# 68 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_8_non_const_b0))[0]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[__cuda_local_var_43581_6_non_const_x]);
+# 69 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_8_non_const_a0))[1]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[(__cuda_local_var_43582_6_non_const_y + 8)]);
+# 70 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_8_non_const_b0))[1]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[(__cuda_local_var_43581_6_non_const_x + 8)]);
+# 70 "tiled_matmul-9-3.cu"
+{
+# 73 "tiled_matmul-9-3.cu"
+ int i;
+# 73 "tiled_matmul-9-3.cu"
+i = 1;
+# 75 "tiled_matmul-9-3.cu"
+
+#pragma unroll
+for (; (i < 8); ++i)
+# 73 "tiled_matmul-9-3.cu"
+{
+# 73 "tiled_matmul-9-3.cu"
+ __texture_type__ __T228;
+# 74 "tiled_matmul-9-3.cu"
+ float __T229;
+# 75 "tiled_matmul-9-3.cu"
+ float __T230;
+# 76 "tiled_matmul-9-3.cu"
+ struct float4 __T231;
+# 77 "tiled_matmul-9-3.cu"
+ struct float4 __T232;
+# 78 "tiled_matmul-9-3.cu"
+ __texture_type__ __T233;
+# 79 "tiled_matmul-9-3.cu"
+ float __T234;
+# 80 "tiled_matmul-9-3.cu"
+ float __T235;
+# 81 "tiled_matmul-9-3.cu"
+ struct float4 __T236;
+# 82 "tiled_matmul-9-3.cu"
+ struct float4 __T237;
+# 74 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43630_8_non_const_base;
+# 74 "tiled_matmul-9-3.cu"
+__cuda_local_var_43630_8_non_const_base = (i * 16);
+# 75 "tiled_matmul-9-3.cu"
+(__cuda_local_var_43578_9_non_const_A_pref[((i * 64) + __cuda_local_var_43587_6_non_const_id)]) = ((((__T228 = tex_A) , ((void)(__T229 = ((float)(t + i))))) , ((void)(__T230 = ((float)__cuda_local_var_43589_6_non_const_glbA_id)))) , ((__T232 = (_Z11__ftexfetchIfLi2EL19cudaTextureReadMode0EE6float47textureIT_XT0_EXT1_EES1_i(__T228, ((((((__T231.x) = __T229) , ((void)((__T231.y) = __T230))) , ((void)((__T231.z) = (0.0F)))) , ((void)((__T231.w) = (0.0F)))) , __T231), 2))) , (__T232.x)));
+# 76 "tiled_matmul-9-3.cu"
+(__cuda_local_var_43579_9_non_const_B_pref[((i * 64) + __cuda_local_var_43587_6_non_const_id)]) = ((((__T233 = tex_B) , ((void)(__T234 = ((float)__cuda_local_var_43590_6_non_const_glbB_id)))) , ((void)(__T235 = ((float)(t + i))))) , ((__T237 = (_Z11__ftexfetchIfLi2EL19cudaTextureReadMode0EE6float47textureIT_XT0_EXT1_EES1_i(__T233, ((((((__T236.x) = __T234) , ((void)((__T236.y) = __T235))) , ((void)((__T236.z) = (0.0F)))) , ((void)((__T236.w) = (0.0F)))) , __T236), 2))) , (__T237.x)));
+# 78 "tiled_matmul-9-3.cu"
+if (i & 1)
+# 78 "tiled_matmul-9-3.cu"
+{
+# 79 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_15_non_const_a1))[0]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[(__cuda_local_var_43630_8_non_const_base + __cuda_local_var_43582_6_non_const_y)]);
+# 80 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_15_non_const_b1))[0]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[(__cuda_local_var_43630_8_non_const_base + __cuda_local_var_43581_6_non_const_x)]);
+# 81 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_15_non_const_a1))[1]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[((__cuda_local_var_43630_8_non_const_base + __cuda_local_var_43582_6_non_const_y) + 8)]);
+# 82 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_15_non_const_b1))[1]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[((__cuda_local_var_43630_8_non_const_base + __cuda_local_var_43581_6_non_const_x) + 8)]);
+# 82 "tiled_matmul-9-3.cu"
+{
+# 84 "tiled_matmul-9-3.cu"
+ int ii;
+# 84 "tiled_matmul-9-3.cu"
+ii = 0;
+# 84 "tiled_matmul-9-3.cu"
+for (; (ii < 8); ++ii)
+# 84 "tiled_matmul-9-3.cu"
+{
+# 84 "tiled_matmul-9-3.cu"
+{
+# 85 "tiled_matmul-9-3.cu"
+ int jj;
+# 85 "tiled_matmul-9-3.cu"
+jj = 0;
+# 85 "tiled_matmul-9-3.cu"
+for (; (jj < 8); ++jj)
+# 85 "tiled_matmul-9-3.cu"
+{
+# 86 "tiled_matmul-9-3.cu"
+((((__cuda_local_var_43596_8_non_const_c)[ii]))[jj]) += (((__cuda_local_var_43593_8_non_const_a0)[ii]) * ((__cuda_local_var_43594_8_non_const_b0)[jj]));
+# 86 "tiled_matmul-9-3.cu"
+}
+# 86 "tiled_matmul-9-3.cu"
+}
+# 86 "tiled_matmul-9-3.cu"
+}
+# 86 "tiled_matmul-9-3.cu"
+}
+# 88 "tiled_matmul-9-3.cu"
+}
+# 88 "tiled_matmul-9-3.cu"
+else 
+# 88 "tiled_matmul-9-3.cu"
+{
+# 89 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_8_non_const_a0))[0]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[(__cuda_local_var_43630_8_non_const_base + __cuda_local_var_43582_6_non_const_y)]);
+# 90 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_8_non_const_b0))[0]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[(__cuda_local_var_43630_8_non_const_base + __cuda_local_var_43581_6_non_const_x)]);
+# 91 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_8_non_const_a0))[1]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[((__cuda_local_var_43630_8_non_const_base + __cuda_local_var_43582_6_non_const_y) + 8)]);
+# 92 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_8_non_const_b0))[1]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[((__cuda_local_var_43630_8_non_const_base + __cuda_local_var_43581_6_non_const_x) + 8)]);
+# 92 "tiled_matmul-9-3.cu"
+{
+# 94 "tiled_matmul-9-3.cu"
+ int ii;
+# 94 "tiled_matmul-9-3.cu"
+ii = 0;
+# 94 "tiled_matmul-9-3.cu"
+for (; (ii < 8); ++ii)
+# 94 "tiled_matmul-9-3.cu"
+{
+# 94 "tiled_matmul-9-3.cu"
+{
+# 95 "tiled_matmul-9-3.cu"
+ int jj;
+# 95 "tiled_matmul-9-3.cu"
+jj = 0;
+# 95 "tiled_matmul-9-3.cu"
+for (; (jj < 8); ++jj)
+# 95 "tiled_matmul-9-3.cu"
+{
+# 96 "tiled_matmul-9-3.cu"
+((((__cuda_local_var_43596_8_non_const_c)[ii]))[jj]) += (((__cuda_local_var_43593_15_non_const_a1)[ii]) * ((__cuda_local_var_43594_15_non_const_b1)[jj]));
+# 96 "tiled_matmul-9-3.cu"
+}
+# 96 "tiled_matmul-9-3.cu"
+}
+# 96 "tiled_matmul-9-3.cu"
+}
+# 96 "tiled_matmul-9-3.cu"
+}
+# 98 "tiled_matmul-9-3.cu"
+}
+# 99 "tiled_matmul-9-3.cu"
+}
+# 99 "tiled_matmul-9-3.cu"
+}
+# 99 "tiled_matmul-9-3.cu"
+{
+# 101 "tiled_matmul-9-3.cu"
+ int i;
+# 101 "tiled_matmul-9-3.cu"
+i = 0;
+# 101 "tiled_matmul-9-3.cu"
+for (; (i < 8); ++i)
+# 101 "tiled_matmul-9-3.cu"
+{
+# 101 "tiled_matmul-9-3.cu"
+{
+# 102 "tiled_matmul-9-3.cu"
+ int j;
+# 102 "tiled_matmul-9-3.cu"
+j = 0;
+# 102 "tiled_matmul-9-3.cu"
+for (; (j < 8); ++j)
+# 102 "tiled_matmul-9-3.cu"
+{
+# 103 "tiled_matmul-9-3.cu"
+((((__cuda_local_var_43596_8_non_const_c)[i]))[j]) += (((__cuda_local_var_43593_15_non_const_a1)[i]) * ((__cuda_local_var_43594_15_non_const_b1)[j]));
+# 104 "tiled_matmul-9-3.cu"
+}
+# 104 "tiled_matmul-9-3.cu"
+}
+# 105 "tiled_matmul-9-3.cu"
+}
+# 105 "tiled_matmul-9-3.cu"
+}
+# 107 "tiled_matmul-9-3.cu"
+__cuda_local_var_43578_9_non_const_A_pref = (((__cuda_local_var_43576_32_non_const_sA_bf)[__cuda_local_var_43613_6_non_const_track_bf]));
+# 108 "tiled_matmul-9-3.cu"
+__cuda_local_var_43579_9_non_const_B_pref = (((__cuda_local_var_43577_32_non_const_sB_bf)[__cuda_local_var_43613_6_non_const_track_bf]));
+# 109 "tiled_matmul-9-3.cu"
+__cuda_local_var_43578_18_non_const_A_now = (((__cuda_local_var_43576_32_non_const_sA_bf)[(1 - __cuda_local_var_43613_6_non_const_track_bf)]));
+# 110 "tiled_matmul-9-3.cu"
+__cuda_local_var_43579_18_non_const_B_now = (((__cuda_local_var_43577_32_non_const_sB_bf)[(1 - __cuda_local_var_43613_6_non_const_track_bf)]));
+# 111 "tiled_matmul-9-3.cu"
+__cuda_local_var_43613_6_non_const_track_bf = (1 ^ __cuda_local_var_43613_6_non_const_track_bf);
+# 113 "tiled_matmul-9-3.cu"
+}
+# 113 "tiled_matmul-9-3.cu"
+}
+# 114 "tiled_matmul-9-3.cu"
+__syncthreads();
+# 118 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_8_non_const_a0))[0]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[__cuda_local_var_43582_6_non_const_y]);
+# 119 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_8_non_const_b0))[0]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[__cuda_local_var_43581_6_non_const_x]);
+# 120 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_8_non_const_a0))[1]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[(__cuda_local_var_43582_6_non_const_y + 8)]);
+# 121 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_8_non_const_b0))[1]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[(__cuda_local_var_43581_6_non_const_x + 8)]);
+# 121 "tiled_matmul-9-3.cu"
+{
+# 124 "tiled_matmul-9-3.cu"
+ int i;
+# 124 "tiled_matmul-9-3.cu"
+i = 1;
+# 126 "tiled_matmul-9-3.cu"
+
+#pragma unroll
+for (; (i < 8); ++i)
+# 124 "tiled_matmul-9-3.cu"
+{
+# 125 "tiled_matmul-9-3.cu"
+ int __cuda_local_var_43681_7_non_const_base;
+# 125 "tiled_matmul-9-3.cu"
+__cuda_local_var_43681_7_non_const_base = (i * 16);
+# 127 "tiled_matmul-9-3.cu"
+if (i & 1)
+# 127 "tiled_matmul-9-3.cu"
+{
+# 128 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_15_non_const_a1))[0]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[(__cuda_local_var_43681_7_non_const_base + __cuda_local_var_43582_6_non_const_y)]);
+# 129 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_15_non_const_b1))[0]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[(__cuda_local_var_43681_7_non_const_base + __cuda_local_var_43581_6_non_const_x)]);
+# 130 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_15_non_const_a1))[1]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[((__cuda_local_var_43681_7_non_const_base + __cuda_local_var_43582_6_non_const_y) + 8)]);
+# 131 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_15_non_const_b1))[1]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[((__cuda_local_var_43681_7_non_const_base + __cuda_local_var_43581_6_non_const_x) + 8)]);
+# 131 "tiled_matmul-9-3.cu"
+{
+# 133 "tiled_matmul-9-3.cu"
+ int ii;
+# 133 "tiled_matmul-9-3.cu"
+ii = 0;
+# 133 "tiled_matmul-9-3.cu"
+for (; (ii < 8); ++ii)
+# 133 "tiled_matmul-9-3.cu"
+{
+# 133 "tiled_matmul-9-3.cu"
+{
+# 134 "tiled_matmul-9-3.cu"
+ int jj;
+# 134 "tiled_matmul-9-3.cu"
+jj = 0;
+# 134 "tiled_matmul-9-3.cu"
+for (; (jj < 8); ++jj)
+# 134 "tiled_matmul-9-3.cu"
+{
+# 135 "tiled_matmul-9-3.cu"
+((((__cuda_local_var_43596_8_non_const_c)[ii]))[jj]) += (((__cuda_local_var_43593_8_non_const_a0)[ii]) * ((__cuda_local_var_43594_8_non_const_b0)[jj]));
+# 135 "tiled_matmul-9-3.cu"
+}
+# 135 "tiled_matmul-9-3.cu"
+}
+# 135 "tiled_matmul-9-3.cu"
+}
+# 135 "tiled_matmul-9-3.cu"
+}
+# 137 "tiled_matmul-9-3.cu"
+}
+# 137 "tiled_matmul-9-3.cu"
+else 
+# 137 "tiled_matmul-9-3.cu"
+{
+# 138 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_8_non_const_a0))[0]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[(__cuda_local_var_43681_7_non_const_base + __cuda_local_var_43582_6_non_const_y)]);
+# 139 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_8_non_const_b0))[0]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[(__cuda_local_var_43681_7_non_const_base + __cuda_local_var_43581_6_non_const_x)]);
+# 140 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43593_8_non_const_a0))[1]) = (((struct float4 *)__cuda_local_var_43578_18_non_const_A_now)[((__cuda_local_var_43681_7_non_const_base + __cuda_local_var_43582_6_non_const_y) + 8)]);
+# 141 "tiled_matmul-9-3.cu"
+(((struct float4 *)(__cuda_local_var_43594_8_non_const_b0))[1]) = (((struct float4 *)__cuda_local_var_43579_18_non_const_B_now)[((__cuda_local_var_43681_7_non_const_base + __cuda_local_var_43581_6_non_const_x) + 8)]);
+# 141 "tiled_matmul-9-3.cu"
+{
+# 143 "tiled_matmul-9-3.cu"
+ int ii;
+# 143 "tiled_matmul-9-3.cu"
+ii = 0;
+# 143 "tiled_matmul-9-3.cu"
+for (; (ii < 8); ++ii)
+# 143 "tiled_matmul-9-3.cu"
+{
+# 143 "tiled_matmul-9-3.cu"
+{
+# 144 "tiled_matmul-9-3.cu"
+ int jj;
+# 144 "tiled_matmul-9-3.cu"
+jj = 0;
+# 144 "tiled_matmul-9-3.cu"
+for (; (jj < 8); ++jj)
+# 144 "tiled_matmul-9-3.cu"
+{
+# 145 "tiled_matmul-9-3.cu"
+((((__cuda_local_var_43596_8_non_const_c)[ii]))[jj]) += (((__cuda_local_var_43593_15_non_const_a1)[ii]) * ((__cuda_local_var_43594_15_non_const_b1)[jj]));
+# 145 "tiled_matmul-9-3.cu"
+}
+# 145 "tiled_matmul-9-3.cu"
+}
+# 145 "tiled_matmul-9-3.cu"
+}
+# 145 "tiled_matmul-9-3.cu"
+}
+# 147 "tiled_matmul-9-3.cu"
+}
+# 149 "tiled_matmul-9-3.cu"
+}
+# 149 "tiled_matmul-9-3.cu"
+}
+# 149 "tiled_matmul-9-3.cu"
+{
+# 151 "tiled_matmul-9-3.cu"
+ int i;
+# 151 "tiled_matmul-9-3.cu"
+i = 0;
+# 151 "tiled_matmul-9-3.cu"
+for (; (i < 8); ++i)
+# 151 "tiled_matmul-9-3.cu"
+{
+# 151 "tiled_matmul-9-3.cu"
+{
+# 152 "tiled_matmul-9-3.cu"
+ int j;
+# 152 "tiled_matmul-9-3.cu"
+j = 0;
+# 152 "tiled_matmul-9-3.cu"
+for (; (j < 8); ++j)
+# 152 "tiled_matmul-9-3.cu"
+{
+# 153 "tiled_matmul-9-3.cu"
+((((__cuda_local_var_43596_8_non_const_c)[i]))[j]) += (((__cuda_local_var_43593_15_non_const_a1)[i]) * ((__cuda_local_var_43594_15_non_const_b1)[j]));
+# 154 "tiled_matmul-9-3.cu"
+}
+# 154 "tiled_matmul-9-3.cu"
+}
+# 155 "tiled_matmul-9-3.cu"
+}
+# 155 "tiled_matmul-9-3.cu"
+}
+# 158 "tiled_matmul-9-3.cu"
+__syncthreads();
+# 169 "tiled_matmul-9-3.cu"
+__cuda_local_var_43716_6_non_const_baseSh = (((__cuda_local_var_43587_6_non_const_id < 32) ? 0 : 64) + (__cuda_local_var_43587_6_non_const_id & 31));
+# 170 "tiled_matmul-9-3.cu"
+__cuda_local_var_43717_6_non_const_row = ((__cuda_local_var_43585_6_non_const_by + ((__cuda_local_var_43587_6_non_const_id & 16) >> 1)) + ((__cuda_local_var_43587_6_non_const_id < 32) ? 0 : 32));
+# 170 "tiled_matmul-9-3.cu"
+{
+# 172 "tiled_matmul-9-3.cu"
+ int i;
+# 172 "tiled_matmul-9-3.cu"
+i = 0;
+# 172 "tiled_matmul-9-3.cu"
+for (; (i < 8); ++i)
+# 172 "tiled_matmul-9-3.cu"
+{
+# 173 "tiled_matmul-9-3.cu"
+(((struct float4 *)(((__cuda_local_var_43576_32_non_const_sA_bf)[0])))[(__cuda_local_var_43587_6_non_const_id * 2)]) = (((struct float4 *)(((__cuda_local_var_43596_8_non_const_c)[i])))[0]);
+# 174 "tiled_matmul-9-3.cu"
+(((struct float4 *)(((__cuda_local_var_43576_32_non_const_sA_bf)[0])))[((__cuda_local_var_43587_6_non_const_id * 2) + 1)]) = (((struct float4 *)(((__cuda_local_var_43596_8_non_const_c)[i])))[1]);
+# 176 "tiled_matmul-9-3.cu"
+(((struct float4 *)(C + (((__cuda_local_var_43717_6_non_const_row + i) * n) + __cuda_local_var_43584_6_non_const_bx)))[(__cuda_local_var_43587_6_non_const_id % 16)]) = (((struct float4 *)(((__cuda_local_var_43576_32_non_const_sA_bf)[0])))[__cuda_local_var_43716_6_non_const_baseSh]);
+# 177 "tiled_matmul-9-3.cu"
+(((struct float4 *)(C + ((((__cuda_local_var_43717_6_non_const_row + i) + 16) * n) + __cuda_local_var_43584_6_non_const_bx)))[(__cuda_local_var_43587_6_non_const_id % 16)]) = (((struct float4 *)(((__cuda_local_var_43576_32_non_const_sA_bf)[0])))[(__cuda_local_var_43716_6_non_const_baseSh + 32)]);
+# 178 "tiled_matmul-9-3.cu"
+}
+# 178 "tiled_matmul-9-3.cu"
+}
+# 205 "tiled_matmul-9-3.cu"
+} 
+# 205 "tiled_matmul-9-3.cu"
+}}

@@ -1,0 +1,21 @@
+ld.param.u64 	%rd30, [_Z6matMulPKfS0_Pfiii_param_2];
+ld.param.u32 	%r16, [_Z6matMulPKfS0_Pfiii_param_4];
+ld.param.u32 	%r17, [_Z6matMulPKfS0_Pfiii_param_5];
+mov.u32 	%r1, %tid.x;
+mov.u32 	%r18, %ctaid.x;
+shl.b32 	%r2, %r18, 6;
+mov.u32 	%r19, %ctaid.y;
+shl.b32 	%r3, %r19, 6;
+mov.u32 	%r4, %tid.y;
+shl.b32 	%r20, %r4, 3;
+add.s32 	%r5, %r20, %r1;
+and.b32  	%r21, %r5, 28;
+shl.b32 	%r22, %r21, 1;
+and.b32  	%r23, %r5, 3;
+add.s32 	%r24, %r22, %r23;
+setp.lt.s32	%p1, %r5, 32;
+selp.b32	%r25, 0, 4, %p1;
+add.s32 	%r26, %r24, %r25;
+add.s32 	%r27, %r26, %r3;
+add.s32 	%r28, %r26, %r2;
+
