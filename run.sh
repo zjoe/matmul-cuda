@@ -7,7 +7,7 @@ do
 		echo "************ cublas ***********"
 		./cublas $i $i $i $j
 		echo "************* mine ************"
-		./9-5 $i $i $i $j
+		./9-6 $i $i $i $j
 		echo "*****************************************"
 
 		python verify.py gpu.out cublas.out

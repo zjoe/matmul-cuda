@@ -15,3 +15,4 @@
 9-3 change write back from surface to shared+global
 9-4 bound conditions resolved
 9-5 batched, compared with cublas batchedsgemm
+9-6 made an alternative for transposed A, a little faster than 9-5

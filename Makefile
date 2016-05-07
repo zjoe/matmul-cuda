@@ -1,4 +1,4 @@
-all : 0 1 2 3 4 5 6 7 8 9 10 10-1 9-1 9-2 10-2 9-3 9-4 9-5 cublas
+all : 0 1 2 3 4 5 6 7 8 9 10 10-1 9-1 9-2 10-2 9-3 9-4 9-5 cublas 9-6
 
 cublas : cublas.cu cudaErrorHandling.h
 	nvcc -arch=sm_52 --ptxas-options=-v -lcublas -O3 -o cublas cublas.cu

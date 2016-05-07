@@ -55,8 +55,8 @@ void matmulBatched(int m, int n, int k, int batch, const float* h_A, const float
 
 	cudaEventRecord(start, 0);
 
-	cublasSgemmBatched(handle, CUBLAS_OP_T, CUBLAS_OP_T, m, n, k,
-			   &alpha, (const float **)d_refA, k, (const float **)d_refB, n, 
+	cublasSgemmBatched(handle, CUBLAS_OP_N, CUBLAS_OP_T, m, n, k,
+			   &alpha, (const float **)d_refA, m, (const float **)d_refB, n, 
 			   &beta, d_refC, m, batch);
 
 	cudaEventRecord(stop, 0);
