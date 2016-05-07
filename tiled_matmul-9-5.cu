@@ -1,23 +1,13 @@
 #include <stdio.h>
 #include <cuda_runtime.h>
-//#include <cutil.h>
+#include "cudaErrorHandling.h"
 
 
 texture<float, 3, cudaReadModeElementType> tex_A;
 texture<float, 3, cudaReadModeElementType> tex_B;
 
-#define err_handling(ans) { gpuAssert((ans), __FILE__, __LINE__); }
-inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
-{
-   if (code != cudaSuccess) 
-   {
-      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
-      if (abort) exit(code);
-   }
-}
 
-
-__global__ void matMul(float *C, int m, int k, int n, int pitch)
+__global__ void matMul(float *C, int M, int K, int N, int pitch)
 {
 	__shared__ float sA_bf[2][8*64];
 	__shared__ float sB_bf[2][8*64];
@@ -60,7 +50,7 @@ __global__ void matMul(float *C, int m, int k, int n, int pitch)
 	int track_bf = 0;
 
 /****************************** main loop ******************************/
-	for (int t = 8; t < k; t += 8) {
+	for (int t = 8; t < K; t += 8) {
 
 		__syncthreads();
 
@@ -169,7 +159,7 @@ __global__ void matMul(float *C, int m, int k, int n, int pitch)
 		warp 0: 0 for first 16 threads; 8 for second 16 threads;
 		warp 1: 32 for first 16 threads; 40 for second 16 threads;
 */
-	C += batch_id * pitch * m;
+	C += batch_id * pitch * M;
 	int baseSh = (id<32? 0:64) + (id&31);
 	int row = by + ((id&16)>>1) + (id<32? 0:32);
 
@@ -179,13 +169,14 @@ __global__ void matMul(float *C, int m, int k, int n, int pitch)
 		((float4*)sA_bf[0])[id*2+1] = ((float4*)(c[i]))[1];
 
 		if (bx + id%16*4 < pitch) { // bound condition in x direction
-			if (rowi < m) // bound condition in y direction
+			if (rowi < M) // bound condition in y direction
 				((float4*)&C[(rowi   )*pitch+bx])[id%16] = ((float4*)sA_bf[0])[baseSh];    // row  0 and  8 | 32 and 40
-			if (rowi+16 < m) //bound condition in y direction
+			if (rowi+16 < M) //bound condition in y direction
 				((float4*)&C[(rowi+16)*pitch+bx])[id%16] = ((float4*)sA_bf[0])[baseSh+32]; // row 16 and 24 | 48 and 56
 		}
 	}
 }
+
 int main(int argc, char *argv[])
 {
 	if (argc != 5) {
@@ -239,16 +230,14 @@ int main(int argc, char *argv[])
 	copyParamsA.dstArray = A_array;
 	copyParamsA.extent = extentA;
 	copyParamsA.kind = cudaMemcpyHostToDevice;
-
-	cudaMemcpy3D(&copyParamsA);
+	err_handling(  cudaMemcpy3D(&copyParamsA)  );
 
 	cudaMemcpy3DParms copyParamsB = {0};
 	copyParamsB.srcPtr = make_cudaPitchedPtr((void*)B, n*sizeof(float), n, k);
 	copyParamsB.dstArray = B_array;
 	copyParamsB.extent = extentB;
 	copyParamsB.kind = cudaMemcpyHostToDevice;
-
-	cudaMemcpy3D(&copyParamsB);
+	err_handling(  cudaMemcpy3D(&copyParamsB)  );
 	
 
 	err_handling(  cudaBindTextureToArray(tex_A, A_array)  );
@@ -282,7 +271,7 @@ int main(int argc, char *argv[])
 
 	float time_elapsed = 0;
 	err_handling(  cudaEventElapsedTime(&time_elapsed, start, stop)  );
-	printf("%fms\n", time_elapsed);
+	printf("time %fms\n", time_elapsed);
 
 
 
@@ -308,6 +297,10 @@ int main(int argc, char *argv[])
 	fclose(fp);
 
 
+	err_handling(  cudaUnbindTexture(tex_A)  );
+	err_handling(  cudaUnbindTexture(tex_B)  );
+	err_handling(  cudaFreeArray(A_array)  );
+	err_handling(  cudaFreeArray(B_array)  );
 	err_handling(  cudaFree(dev_C)  );
 	err_handling(  cudaDeviceReset()  );
 

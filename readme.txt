@@ -14,3 +14,4 @@
 9-2 float4 shared load 100% double both, register array: c(looped); shared double buffer fixed to scatter in calculating
 9-3 change write back from surface to shared+global
 9-4 bound conditions resolved
+9-5 batched, compared with cublas batchedsgemm
